@@ -1,0 +1,60 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+// prisma/schema.prisma
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql" // or "sqlite", "mysql", etc.
+  url      = env("DATABASE_URL")
+}
+
+// --------------------
+// Player Table
+// --------------------
+model Player {
+  id           Int      @id @default(autoincrement())
+  number       String
+  name         String
+  nickname     String?
+  dateOfBirth  String
+  nationality  String
+  pos          String
+  position     String
+  height       String?
+  weight       String?
+  bio          String?
+  imageUrl     String?
+  social       String?
+}
+
+// --------------------
+// News Table
+// --------------------
+model News {
+  id        Int      @id @default(autoincrement())
+  title     String
+  date      DateTime
+  excerpt   String
+  imageUrl  String?
+  content   String
+}
+
+// --------------------
+// Ticket Table
+// --------------------
+model Ticket {
+  id          Int      @id @default(autoincrement())
+  title       String
+  date        DateTime
+  competition String
+  venue       String
+  thumbnail   String?
+  description String
+}

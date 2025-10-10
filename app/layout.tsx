@@ -1,3 +1,6 @@
+import Alert from "@/components/Alert";
+import Footer from "@/components/Footer";
+import Navbar from "@/components/Navbar";
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
@@ -27,7 +30,16 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
+        {" "}
+        <div className="z-10">
+          <Alert />
+        </div>
+        {/* <Navbar /> */}
+        <div className="z-10 text-black  backdrop-blur-xs sticky top-0 left-0 w-full">
+          <Navbar />
+        </div>
         {children}
+        <Footer />
       </body>
     </html>
   );
