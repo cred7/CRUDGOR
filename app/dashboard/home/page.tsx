@@ -68,6 +68,7 @@ export default function DataInputForms() {
   // ---------------------------
   // ✅ Generic Handlers
   // ---------------------------
+
   const handleChange =
     (setter: any) =>
     (
@@ -100,8 +101,14 @@ export default function DataInputForms() {
       }
     };
 
-  const handleSubmit = async (label: string, data: any) => {
+  const handleSubmit = async (
+    label: string,
+    data: any,
+    schema: Yup.AnyObjectSchema
+  ) => {
     try {
+      await schema.validate(data);
+      setError((prev: any) => ({ ...prev, [label]: "" }));
       const endpointMap: Record<string, string> = {
         Player: "/api/player",
         News: "/api/news",
@@ -132,6 +139,12 @@ export default function DataInputForms() {
       setAlertMessage(result.message || `${label} saved successfully!`);
       setTimeout(() => setAlertMessage(null), 5000);
     } catch (error: any) {
+      if (error instanceof Yup.ValidationError) {
+        setError((prev: any) => ({
+          ...prev,
+          [label]: error.message.slice(0, 33),
+        }));
+      }
       console.error(`🚨 Failed to save ${label}:`, error.message);
       setError(`Failed to save ${label}`);
       setTimeout(() => setError(null), 5000);
@@ -145,6 +158,7 @@ export default function DataInputForms() {
   // ---------------------------
   // ✅ UI
   // ---------------------------
+
   return (
     <section className="max-w-4xl mx-auto p-6 bg-white rounded-xl shadow-lg mt-10 text-black space-y-10">
       {/* PLAYER FORM */}
@@ -153,7 +167,9 @@ export default function DataInputForms() {
           Player Data Input
         </h1>
         <form
-          onSubmit={(e) => (e.preventDefault(), handleSubmit("Player", player))}
+          onSubmit={(e) => (
+            e.preventDefault(), handleSubmit("Player", player, playerSchema)
+          )}
           className="space-y-4"
         >
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -248,11 +264,20 @@ export default function DataInputForms() {
               </div>
             ))}
           </div>
+
           <button
             type="submit"
-            className="w-full bg-green-600 hover:bg-green-700 text-white font-semibold py-2 px-4 rounded-md mt-4"
+            disabled={Object.values(playerErrors).some((v) => v !== "")}
+            className={`w-full bg-green-600 hover:bg-green-700 text-white font-semibold py-2 px-4 rounded-md mt-4${
+              Object.values(playerErrors).some((v) => v !== "")
+                ? "hover:bg-gray-900 w-full cursor-not-allowed hover:text-black"
+                : ""
+            }`}
           >
             Save Player
+            {Object.values(playerErrors).some((v) => v !== "")
+              ? " (Fix errors)"
+              : ""}
           </button>
           {alertMessage?.includes("Player") && (
             <div className="mb-4 p-3 bg-green-100 text-green-800 border border-green-200 rounded">
@@ -271,7 +296,9 @@ export default function DataInputForms() {
       <div>
         <h1 className="text-2xl font-bold text-center mb-6">News Data Input</h1>
         <form
-          onSubmit={(e) => (e.preventDefault(), handleSubmit("News", news))}
+          onSubmit={(e) => (
+            e.preventDefault(), handleSubmit("News", news, newsSchema)
+          )}
           className="space-y-4"
         >
           {Object.keys(news).map((key) => (
@@ -330,7 +357,9 @@ export default function DataInputForms() {
           Ticket Event Input
         </h1>
         <form
-          onSubmit={(e) => (e.preventDefault(), handleSubmit("Ticket", ticket))}
+          onSubmit={(e) => (
+            e.preventDefault(), handleSubmit("Ticket", ticket, newsSchema)
+          )}
           className="space-y-4"
         >
           {Object.keys(ticket).map((key) => (

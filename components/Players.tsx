@@ -15,36 +15,40 @@ const News = async () => {
 
           <div className="max-w-5xl overflow-hidden w-full m-auto">
             <div className="grid fade-in grid-cols-1 lg:w-full lg:flex-nowrap sm:grid-cols-2 md:grid-cols-3 lg:flex lg:flex-row lg:overflow-x-scroll scrollbar-hide gap-4 sm:gap-x-4 md:px-0">
-              {playerData.slice(0, 5).map((i, index) => (
-                <div
-                  key={index}
-                  className="min-w-[40vw] shadow-sm md:min-w-[24%] h-[60vh] md:h-[50vh] lg:h-75 rejlative"
-                >
-                  <div className="w-full flex justify-between">
-                    {" "}
-                    <h1 className="absolunte text-black left-3 top-3">
-                      {i.name}
-                    </h1>
-                    <h1 className="absolutke text-black right-3 top-3">
-                      {new Date().getFullYear() -
-                        new Date(i.dateOfBirth).getFullYear()}
-                    </h1>
-                  </div>
+              {playerData ? (
+                playerData.slice(0, 5).map((i, index) => (
+                  <div
+                    key={index}
+                    className="min-w-[40vw] shadow-sm md:min-w-[24%] h-[60vh] md:h-[50vh] lg:h-75 rejlative"
+                  >
+                    <div className="w-full flex justify-between">
+                      {" "}
+                      <h1 className="absolunte text-black left-3 top-3">
+                        {i.name}
+                      </h1>
+                      <h1 className="absolutke text-black right-3 top-3">
+                        {new Date().getFullYear() -
+                          new Date(i.dateOfBirth).getFullYear()}
+                      </h1>
+                    </div>
 
-                  <div className="w-full relative h-[80%]">
-                    <Image
-                      src={i.imageUrl || `/Logo.png`}
-                      alt=""
-                      fill
-                      className="w-[100%] h-[80%] object-contain rounded"
-                    />
+                    <div className="w-full relative h-[80%]">
+                      <Image
+                        src={i.imageUrl || `/Logo.png`}
+                        alt=""
+                        fill
+                        className="w-[100%] h-[80%] object-contain rounded"
+                      />
+                    </div>
+                    <div className="w-full flex justify-between">
+                      <div className=" text-black ">{i.position}</div>
+                      <div className=" text-black">{index}</div>
+                    </div>
                   </div>
-                  <div className="w-full flex justify-between">
-                    <div className=" text-black ">{i.position}</div>
-                    <div className=" text-black">{index}</div>
-                  </div>
-                </div>
-              ))}
+                ))
+              ) : (
+                <div>No players found</div>
+              )}
             </div>
           </div>
         </div>

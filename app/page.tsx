@@ -2,7 +2,6 @@ import Hero from "@/components/Hero";
 import History from "@/components/History";
 import News from "@/components/News";
 import Nextgame from "@/components/Nextgame";
-import Players from "@/components/Players";
 import Store from "@/components/Store";
 
 export default function Home() {
@@ -11,7 +10,7 @@ export default function Home() {
       <Hero />
       <Nextgame />
       <News />
-      <Players />
+      {/* <Players /> */}
 
       <Store />
       <History />
