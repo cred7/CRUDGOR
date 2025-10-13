@@ -40,7 +40,7 @@ model Player {
 model News {
   id        Int      @id @default(autoincrement())
   title     String
-  date      DateTime
+  date      String
   excerpt   String
   imageUrl  String?
   content   String
@@ -49,12 +49,23 @@ model News {
 // --------------------
 // Ticket Table
 // --------------------
-model Ticket {
-  id          Int      @id @default(autoincrement())
-  title       String
-  date        DateTime
-  competition String
-  venue       String
-  thumbnail   String?
-  description String
+model Event {
+  id           String   @id @default(cuid())
+  title        String
+  date         String
+  competition  String
+  venue        String
+  thumbnail    String
+  soldOut      Boolean  @default(false)
+  description  String?
+  tiers        Tier[]
+}
+
+model Tier {
+  id        String   @id @default(cuid())
+  name      String
+  price     Float
+  available Int
+  event     Event    @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  eventId   String
 }

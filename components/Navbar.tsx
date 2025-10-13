@@ -11,8 +11,8 @@ const Navbar = () => {
     { name: "Shop", href: "/shop" },
   ];
   return (
-    <div className="flex w-full">
-      <div className="flex w-full items-center justify-between  bg-green-700 bg-gradient-to-b from-transparent to-green-600/90 text-white font-bold p-3  ">
+    <div className="flex w-full px-[calc(100vw-90%)]">
+      <div className="flex w-full rounded-b-2xl items-center justify-between  primary bg-gradient-to-b from-transparent to-green-600/90 text-white font-bold p-3  ">
         <div className="font-bold text-xl object-cover relative w-20 h-20 ">
           <Link href="/">
             <Image fill src={"/logo.png"} alt="" />

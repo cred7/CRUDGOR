@@ -35,7 +35,7 @@ export default function RootLayout({
           <Alert />
         </div>
         {/* <Navbar /> */}
-        <div className="z-10 text-black  backdrop-blur-xs sticky top-0 left-0 w-full">
+        <div className="z-10 text-black  backdrop-blur-xs sticky top-0 left-0 w-auto">
           <Navbar />
         </div>
         {children}

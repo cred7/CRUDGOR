@@ -49,6 +49,10 @@ export default function DataInputForms() {
     venue: "",
     thumbnail: "",
     description: "",
+    soldOut: "",
+    tname: "",
+    tprice: 4,
+    tavailable: 4,
   });
   const [ticketErrors, setTicketErrors] = useState<Record<string, string>>({});
 
@@ -104,15 +108,16 @@ export default function DataInputForms() {
   const handleSubmit = async (
     label: string,
     data: any,
-    schema: Yup.AnyObjectSchema
+    schema: Yup.AnyObjectSchema,
+    seterror: any
   ) => {
     try {
       await schema.validate(data);
-      setError((prev: any) => ({ ...prev, [label]: "" }));
+      seterror((prev: any) => ({ ...prev, [label]: "" }));
       const endpointMap: Record<string, string> = {
         Player: "/api/player",
         News: "/api/news",
-        Ticket: "/api/ticket",
+        Ticket: "/api/createticket",
       };
 
       const endpoint = endpointMap[label];
@@ -140,7 +145,7 @@ export default function DataInputForms() {
       setTimeout(() => setAlertMessage(null), 5000);
     } catch (error: any) {
       if (error instanceof Yup.ValidationError) {
-        setError((prev: any) => ({
+        seterror((prev: any) => ({
           ...prev,
           [label]: error.message.slice(0, 33),
         }));
@@ -168,7 +173,8 @@ export default function DataInputForms() {
         </h1>
         <form
           onSubmit={(e) => (
-            e.preventDefault(), handleSubmit("Player", player, playerSchema)
+            e.preventDefault(),
+            handleSubmit("Player", player, playerSchema, setPlayerErrors)
           )}
           className="space-y-4"
         >
@@ -297,7 +303,8 @@ export default function DataInputForms() {
         <h1 className="text-2xl font-bold text-center mb-6">News Data Input</h1>
         <form
           onSubmit={(e) => (
-            e.preventDefault(), handleSubmit("News", news, newsSchema)
+            e.preventDefault(),
+            handleSubmit("News", news, newsSchema, setNewsErrors)
           )}
           className="space-y-4"
         >
@@ -358,7 +365,8 @@ export default function DataInputForms() {
         </h1>
         <form
           onSubmit={(e) => (
-            e.preventDefault(), handleSubmit("Ticket", ticket, newsSchema)
+            e.preventDefault(),
+            handleSubmit("Ticket", ticket, newsSchema, setTicketErrors)
           )}
           className="space-y-4"
         >

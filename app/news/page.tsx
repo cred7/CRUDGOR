@@ -1,9 +1,11 @@
 // components/NewsSection.tsx
-import { NEWS } from "@/data/data";
+import prisma from "@/lib/prisma";
 import Image from "next/image";
 import Link from "next/link";
 
-export default function NewsSection() {
+export default async function NewsSection() {
+  const NEWS = await prisma.news.findMany();
+
   return (
     <section className="max-w-5xl mx-auto px-4 md:px-8 py-10">
       <h2 className="text-3xl md:text-4xl text-black font-extrabold mb-6">

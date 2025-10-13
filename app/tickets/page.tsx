@@ -1,9 +1,9 @@
 // components/Tickets.tsx
 "use client";
-import { EVENTS, TicketEvent } from "@/data/data";
+import { TicketEvent } from "@/data/data";
 import { purchaseSchema } from "@/data/val";
 import Image from "next/image";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import {
   FaCalendarAlt,
   FaChevronDown,
@@ -13,6 +13,8 @@ import {
 
 export default function Tickets() {
   /* eslint-disable @typescript-eslint/no-explicit-any */
+
+  const [Events, setEvents] = useState<TicketEvent[]>([]);
   const [query, setQuery] = useState("");
   const [filterCompetition, setFilterCompetition] = useState<string>("All");
   const [sortBy, setSortBy] = useState<"date-asc" | "date-desc" | "price-asc">(
@@ -25,6 +27,8 @@ export default function Tickets() {
   const [showFaq, setShowFaq] = useState<Record<string, boolean>>({});
 
   const [error, setError] = useState<string | null>(null);
+  const [succes, setSucces] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false); // Add loading state
 
   const handleQtyChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = Number(e.target.value);
@@ -39,12 +43,12 @@ export default function Tickets() {
   };
 
   const competitions = useMemo(() => {
-    const set = new Set(EVENTS.map((e) => e.competition));
+    const set = new Set(Events.map((e) => e.competition));
     return ["All", ...Array.from(set)];
-  }, []);
+  }, [Events]);
 
   const filtered = useMemo(() => {
-    let list = EVENTS.filter((e) =>
+    let list = Events.filter((e) =>
       e.title.toLowerCase().includes(query.toLowerCase())
     );
 
@@ -66,7 +70,7 @@ export default function Tickets() {
     }
 
     return list;
-  }, [query, filterCompetition, sortBy]);
+  }, [query, filterCompetition, sortBy, Events]);
 
   function openPurchase(e: TicketEvent) {
     setSelectedEvent(e);
@@ -74,28 +78,72 @@ export default function Tickets() {
     setPurchaseQty(1);
   }
 
-  function confirmPurchase() {
-    if (!selectedEvent || !selectedTier) return;
-    // placeholder for actual purchase flow
-    alert(
-      `Purchased ${purchaseQty} x ${selectedTier} for ${selectedEvent.title}. (Demo)`
-    );
-    // reduce availability locally for demo
-    selectedEvent.tiers = selectedEvent.tiers.map((t) =>
-      t.name === selectedTier
-        ? { ...t, available: Math.max(0, t.available - purchaseQty) }
-        : t
-    );
+  async function confirmPurchase() {
+    // placeholder for actual purchase
+    try {
+      if (!selectedEvent || !selectedTier) return;
+      alert(
+        `Purchased ${purchaseQty} x ${selectedTier} for ${selectedEvent.title}. (Demo)`
+      );
+      const data = { selectedEvent, selectedTier, purchaseQty };
+      console.log("Purchase data:", data);
+
+      const savedTicket = await fetch("/api/ticket", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          eventId: selectedEvent.id,
+          tier: selectedTier,
+          quantity: purchaseQty,
+        }),
+      });
+      const res = await savedTicket.json();
+      setSucces(res.message);
+      setTimeout(() => setSucces(null), 5000);
+      console.log("Purchase response:", res.message);
+    } catch (error) {
+      console.error("Purchase error:", error);
+    }
+
     setSelectedEvent(null);
   }
+  async function getData() {
+    try {
+      setLoading(true); // 2. Set loading to true before fetch
+      const res = await fetch("/api/ticket", { cache: "no-store" });
+      if (!res.ok) {
+        throw new Error("Network error while bringin the data");
+      }
+
+      const data: TicketEvent[] = await res.json();
+      // console.log("Fetched ticket data:", data);
+      setEvents(data);
+      console.log("Events state updated:", Events);
+      // setQuery("G");
+    } catch (error) {
+      setError("Error fetching tickets");
+    } finally {
+      setLoading(false); // 3. Set loading to false after fetch
+    }
+  }
+  useEffect(() => {
+    getData();
+  }, [succes]);
 
   return (
-    <section className="max-w-7xl mx-auto px-4 md:px-8 py-12">
+    <section className="max-w-7xl mx-auto px-4 md:px-8 py-12 items-center justify-center ">
       <header className="flex flex-col md:flex-row md:items-center text-black md:justify-between gap-4 mb-8">
         <div>
           <h1 className="text-3xl md:text-4xl font-extrabold flex items-center gap-3">
-            <FaTicketAlt /> Tickets
+            <FaTicketAlt /> Tickets {error && error}
           </h1>
+          {succes && (
+            <div className=" text-bold rounded-full z-50 top-10 leftt-4 p-3 justify-center items-center bg-green-300 text-green-600">
+              {succes}
+            </div>
+          )}
           <p className="text-black mt-2">
             Browse upcoming matches, pick your seating tier and secure your
             seat.
@@ -136,95 +184,103 @@ export default function Tickets() {
           </select>
         </div>
       </header>
-
-      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-        {filtered.map((evt) => {
-          const cheapest = Math.min(...evt.tiers.map((t) => t.price));
-          const isSoldOut = evt.tiers.every((t) => t.available === 0);
-          return (
-            <article
-              key={evt.id}
-              className="rounded-lg overflow-hidden bg-white shadow hover:shadow-lg transition relative"
-            >
-              <div className="relative h-44 w-full">
-                <Image
-                  src={evt.thumbnail}
-                  alt={evt.title}
-                  fill
-                  className="object-cover"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
-                <div className="absolute left-3 bottom-3 bg-white/90 text-black px-3 py-1 rounded text-sm">
-                  {evt.venue}
+      {loading ? (
+        <div className="text-center py-12 text-lg text-green-700">
+          Loading events...
+        </div>
+      ) : (
+        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+          {filtered.map((evt) => {
+            const cheapest = Math.min(...evt.tiers.map((t) => t.price));
+            const isSoldOut = evt.tiers.every((t) => t.available === 0);
+            return (
+              <article
+                key={evt.id}
+                className="rounded-lg overflow-hidden bg-white shadow hover:shadow-lg transition relative"
+              >
+                <div className="relative h-44 w-full">
+                  <Image
+                    src={evt.thumbnail}
+                    alt={evt.title}
+                    fill
+                    className="object-cover"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
+                  <div className="absolute left-3 bottom-3 bg-white/90 text-black px-3 py-1 rounded text-sm">
+                    {evt.venue}
+                  </div>
+                  {isSoldOut && (
+                    <div className="absolute right-3 top-3 bg-red-600 text-white px-3 py-1 rounded text-sm">
+                      Sold Out
+                    </div>
+                  )}
                 </div>
-                {isSoldOut && (
-                  <div className="absolute right-3 top-3 bg-red-600 text-white px-3 py-1 rounded text-sm">
-                    Sold Out
-                  </div>
-                )}
-              </div>
 
-              <div className="p-4">
-                <div className="flex justify-between items-start gap-3">
-                  <div>
-                    <h3 className="font-bold text-black text-lg">
-                      {evt.title}
-                    </h3>
-                    <p className="text-sm text-black">
-                      {new Date(evt.date).toLocaleString(undefined, {
-                        weekday: "short",
-                        day: "numeric",
-                        month: "short",
-                        hour: "2-digit",
-                        minute: "2-digit",
-                      })}
-                    </p>
-                    <p className="text-sm text-black mt-2">{evt.competition}</p>
-                  </div>
+                <div className="p-4">
+                  <div className="flex justify-between items-start gap-3">
+                    <div>
+                      <h3 className="font-bold text-black text-lg">
+                        {evt.title}
+                      </h3>
+                      <p className="text-sm text-black">
+                        {new Date(evt.date).toLocaleString(undefined, {
+                          weekday: "short",
+                          day: "numeric",
+                          month: "short",
+                          hour: "2-digit",
+                          minute: "2-digit",
+                        })}
+                      </p>
+                      <p className="text-sm text-black mt-2">
+                        {evt.competition}
+                      </p>
+                    </div>
 
-                  <div className="text-right text-black">
-                    <div className="text-sm ">From</div>
-                    <div className="text-xl font-extrabold text-green-700">
-                      Ksh.{cheapest}
+                    <div className="text-right text-black">
+                      <div className="text-sm ">From</div>
+                      <div className="text-xl font-extrabold text-green-700">
+                        Ksh.{cheapest}
+                      </div>
                     </div>
                   </div>
-                </div>
 
-                {/* <p className="text-sm text-black  mt-3 line-clamp-3">
+                  {/* <p className="text-sm text-black  mt-3 line-clamp-3">
                   {evt.description}
                 </p> */}
 
-                <div className="mt-4 flex items-baseline-last justify-between gap-3">
-                  <div className="flex gap-2">
-                    {evt.tiers.slice(0, 2).map((t) => (
-                      <div
-                        key={t.name}
-                        className="text-xs px-2 py-1 bg-gray-100 text-black rounded"
-                      >
-                        {`${t.name} • Ksh.${t.price}`}
-                      </div>
-                    ))}
-                  </div>
+                  <div className="mt-4 flex items-baseline-last justify-between gap-3">
+                    <div className="flex gap-2">
+                      {evt.tiers.slice(0, 2).map((t) => (
+                        <div
+                          key={t.name}
+                          className="text-xs px-2 py-1 bg-gray-100 text-black rounded"
+                        >
+                          {`${t.name} • Ksh.${t.price}`}
+                        </div>
+                      ))}
+                    </div>
 
-                  <div className="flex items-center gap-2">
-                    <button
-                      onClick={() => openPurchase(evt)}
-                      disabled={isSoldOut}
-                      className={`px-3 py-2 rounded-full text-sm font-semibold ${
-                        isSoldOut
-                          ? "bg-gray-300 text-black "
-                          : "bg-green-600  hover:bg-green-700"
-                      }`}
-                    >
-                      {isSoldOut ? "No tickets" : "Buy tickets"}
-                    </button>
+                    <div className="flex items-center gap-2">
+                      <button
+                        onClick={() => openPurchase(evt)}
+                        disabled={isSoldOut}
+                        className={`px-3 py-2 rounded-full text-sm font-semibold ${
+                          isSoldOut
+                            ? "bg-gray-300 text-black "
+                            : "bg-green-600  hover:bg-green-700"
+                        }`}
+                      >
+                        {isSoldOut ? "No tickets" : "Buy tickets"}
+                      </button>
+                    </div>
                   </div>
                 </div>
-              </div>
-            </article>
-          );
-        })}
-      </div>
+              </article>
+            );
+          })}
+        </div>
+      )}
+
       {/* FAQ */}
       <section className="mt-12 text-black">
         <h2 className="text-2xl font-bold mb-4">Frequently Asked Questions</h2>

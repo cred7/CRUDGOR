@@ -1,8 +1,11 @@
-import { NEWS } from "@/data/data";
+import prisma from "@/lib/prisma";
 import Image from "next/image";
 import Button from "./Button";
 
-const Players = () => {
+const News = async () => {
+  const news = await prisma.news.findMany();
+  console.log("dome");
+  console.log(news);
   return (
     <section className="w-full overflow-hidden">
       <div className="flex w-full flex-col mb-3 md:mt-30 px-5 justify-center items-center overflow-hidden">
@@ -12,7 +15,7 @@ const Players = () => {
             <div className="h-0.5  w-2/4 border-none rounded bg-gradient-to-b from-green-700 via-orange-300/60 to-green-600/90"></div>
 
             <div className="grid fade-in grid-cols-1 lg:w-full lg:flex-nowrap md:grid-cols-2 lg:flex lg:flex-row lg:overflow-x-scroll scrollbar-hide gap-4 md:gap-x-4 md:px-0">
-              {NEWS.slice(0, 4).map((i, index) => (
+              {news.slice(0, 4).map((i, index) => (
                 <div key={index} className="w-full px-2">
                   <div className="min-w-[40vw] flex-col shadow-sm md:min-w-[24%] h-[25vh] md:h-[30vh] lg:h-50 relative">
                     <Image
@@ -23,7 +26,7 @@ const Players = () => {
                     />
                   </div>
                   <h1 className="text-lg font-bold">{i.title}</h1>
-                  <h1 className="text-sm">{i.date}</h1>
+                  {/* <h1 className="text-sm">{i.date}</h1> */}
                   <div className="w-full bg-gradient-to-b from-green-700 via-orange-300/60 to-green-600/90"></div>
                   <div className="font-light">{i.excerpt}</div>
                 </div>
@@ -42,4 +45,4 @@ const Players = () => {
   );
 };
 
-export default Players;
+export default News;

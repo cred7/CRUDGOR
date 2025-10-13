@@ -3,7 +3,7 @@ import prisma from "@/lib/prisma";
 import Image from "next/image";
 import Button from "./Button";
 
-const News = async () => {
+const Players = async () => {
   const playerData = await prisma.player.findMany();
 
   return (
@@ -64,4 +64,4 @@ const News = async () => {
   );
 };
 
-export default News;
+export default Players;
