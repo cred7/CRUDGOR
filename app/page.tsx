@@ -6,16 +6,15 @@ import Nextgame from "@/components/Nextgame";
 import Players from "@/components/Players";
 
 import Store from "@/components/Store";
-import Tag from "@/components/tag";
 
 export default function Home() {
   return (
-    <main className="flex min-h-screen max-w-screen  flex-col items-center ">
+    <main className="flex min-h-screen max-w-screen bg-green-50 flex-col items-center ">
       <Hero />
       <Nextgame />
       <News />
       <Players />
-      <Tag />
+      {/* <Tag /> */}
       <Store />
       <History />
     </main>

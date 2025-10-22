@@ -5,7 +5,7 @@ import { NextResponse } from "next/server";
 export async function POST(req: Request) {
   try {
     const data = await req.json();
-    console.log("Received ticket data:", data);
+    console.log("Received ticket data:");
 
     if (!data.eventId || !data.tier || !data.quantity) {
       return NextResponse.json(
@@ -14,25 +14,25 @@ export async function POST(req: Request) {
       );
     }
 
-    const { eventId, tier, quantity } = await data;
+    const { eventId, tier, quantity, name, phone, email } = await data;
 
     const event = await prisma.event.findUnique({
       where: { id: eventId },
       include: { tiers: true },
     });
-
+    console.log("this is the event");
     if (!event) {
       console.log("not found");
       return NextResponse.json({ error: "Event not found" }, { status: 404 });
     }
-    console.log(eventId, tier, quantity, "this are abstracted data");
+    // console.log(eventId, tier, quantity, "this are abstracted data");
     const home = event.tiers.find((t) => t.name === tier);
     // const come = home.name;
-    console.log(home);
-    console.log("tier found", tier);
+    // console.log(home);
+    console.log("tier found");
     // Find tier
     const eventtier = event.tiers.find((t) => t.name === tier);
-    console.log(eventtier, "this is the tier");
+    console.log("this is the tier");
     if (!eventtier) {
       console.log("not found 1");
       return NextResponse.json({ error: "Tier not found" }, { status: 404 });
@@ -49,8 +49,7 @@ export async function POST(req: Request) {
       return NextResponse.json(
         {
           success: true,
-          message:
-            "Yuor ticket has been recieved and created successfully, wait for yuor Email",
+          message: `${name}, payement through ${phone} ticket has been recieved and created successfully,  check your Email: ${email}`,
           update,
         },
         { status: 201 }
@@ -63,8 +62,7 @@ export async function POST(req: Request) {
       return NextResponse.json(
         {
           success: true,
-          message:
-            "Yuor ticket has been recieved and created successfully, wait for yuor Email",
+          message: `${name}, payement through ${phone} ticket has been recieved and created successfully,  check your Email: ${email}`,
           update,
         },
         { status: 201 }
@@ -84,10 +82,7 @@ export async function POST(req: Request) {
 export async function GET() {
   try {
     const events = await prisma.event.findMany({ include: { tiers: true } });
-    // console.log(
-    //   "Fetched ticket events from DB:",
-    //   events.map((e) => e.tiers)
-    // );
+
     return NextResponse.json(events);
   } catch (error) {
     console.error("Ticket GET error:", error);

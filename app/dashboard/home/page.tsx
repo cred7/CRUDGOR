@@ -35,7 +35,7 @@ export default function DataInputForms() {
   const [news, setNews] = useState({
     title: "",
     date: "",
-    excerpt: "",
+    // excerpt: "",
     imageUrl: "",
     content: "",
   });
@@ -49,10 +49,13 @@ export default function DataInputForms() {
     venue: "",
     thumbnail: "",
     description: "",
-    soldOut: "",
-    tname: "",
-    tprice: 4,
-    tavailable: 4,
+    // soldOut: false,
+    tname: "Regular",
+    tprice: 1,
+    tavailable: 1,
+    vname: "VIP",
+    vprice: 1,
+    vavailable: 1,
   });
   const [ticketErrors, setTicketErrors] = useState<Record<string, string>>({});
 
@@ -122,7 +125,7 @@ export default function DataInputForms() {
 
       const endpoint = endpointMap[label];
       if (!endpoint) throw new Error(`No endpoint found for label: ${label}`);
-
+      console.log(data);
       const response = await fetch(endpoint, {
         method: "POST",
         headers: {
@@ -157,7 +160,11 @@ export default function DataInputForms() {
   };
   useEffect(() => {
     if (alertMessage) {
-      window.location.reload(); // 🔁 reload the whole page
+      setTimeout(() => {
+        window.location.reload();
+      }, 300);
+      // 🔁 reload the whole pageret
+      clearTimeout;
     }
   }, [alertMessage]);
   // ---------------------------
@@ -366,7 +373,7 @@ export default function DataInputForms() {
         <form
           onSubmit={(e) => (
             e.preventDefault(),
-            handleSubmit("Ticket", ticket, newsSchema, setTicketErrors)
+            handleSubmit("Ticket", ticket, ticketSchema, setTicketErrors)
           )}
           className="space-y-4"
         >
@@ -395,12 +402,12 @@ export default function DataInputForms() {
           >
             Save Ticket
           </button>
-          {alertMessage?.includes("Ticket") && (
+          {alertMessage?.includes("ticket") && (
             <div className="mb-4 p-3 bg-green-100 text-green-800 border border-green-200 rounded">
               {alertMessage}
             </div>
           )}{" "}
-          {error?.includes("Ticket") && (
+          {error?.includes("ticket") && (
             <div className="mb-4 p-3 bg-red-100 text-red-800 border border-red-200 rounded">
               {error}hhhhhhhhhh
             </div>

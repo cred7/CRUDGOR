@@ -41,7 +41,7 @@ model News {
   id        Int      @id @default(autoincrement())
   title     String
   date      String
-  excerpt   String
+  // excerpt   String
   imageUrl  String?
   content   String
 }
@@ -58,7 +58,7 @@ model Event {
   thumbnail    String
   soldOut      Boolean  @default(false)
   description  String?
-  tiers        Tier[]
+  tiers        Tier[] 
 }
 
 model Tier {
@@ -68,4 +68,27 @@ model Tier {
   available Int
   event     Event    @relation(fields: [eventId], references: [id], onDelete: Cascade)
   eventId   String
+}
+
+
+model Itemshop {
+  id String   @id @default(cuid())
+   nameid String
+    name String
+    price Int
+    imageUrl String
+    isNew Boolean?
+    inStock Int?
+    description String?
+}
+
+model Purchase {
+  id Int @id @default(autoincrement())
+  productname String
+  quantity Int
+  price Float
+  subtotal Float
+  amountPaid Float?
+  total Float
+  purchaseDate String
 }

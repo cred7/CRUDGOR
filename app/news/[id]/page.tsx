@@ -1,11 +1,12 @@
 // app/news/[id]/page.tsx
-import { NEWS } from "@/data/data";
+import prisma from "@/lib/prisma";
 import Image from "next/image";
 import { notFound } from "next/navigation";
 
 export async function generateStaticParams() {
+  const NEWS = await prisma.news.findMany();
   return NEWS.map((n) => ({
-    id: n.id,
+    id: n.id.toString(),
   }));
 }
 
@@ -14,19 +15,20 @@ export default async function NewsDetail({
 }: {
   params: Promise<{ id: string }>;
 }) {
+  const NEWS = await prisma.news.findMany();
   const { id } = await params;
-  const article = NEWS.find((n) => n.id === id);
+  const article = NEWS.find((n) => n.id === Number(id));
 
   if (!article) return notFound();
 
   return (
-    <div className="max-w-7xl flex flex-col items-center justify-center mx-auto px-4 md:px-8 py- text-black">
-      <div className="relative w-full h-[70vh] mb-6">
+    <div className="max-w-7xl  flex flex-col items-center justify-center mx-auto px-4 md:px-8 py- text-black">
+      <div className="relative w-3/5 h-[70vh] mb-6">
         <Image
-          src={article.imageUrl}
+          src={article.imageUrl.includes("/") ? article.imageUrl : `/Logo.png`}
           alt={article.title}
           fill
-          className="object-cover rounded-lg"
+          className="object-contain rounded-lg"
         />
       </div>
       <h1 className="text-4xl font-bold mb-2">{article.title}</h1>

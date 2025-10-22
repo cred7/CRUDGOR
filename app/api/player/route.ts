@@ -41,11 +41,11 @@ export async function GET() {
     const now = Date.now();
     // Check if cache is valid
     if (cachedPlayers && cacheTimestamp && now - cacheTimestamp < CACHE_TTL) {
-      console.log("Returning players from cache");
+      // console.log("Returning players from cache");
       return NextResponse.json(cachedPlayers, { status: 200 });
     }
     const players = await prisma.player.findMany();
-    console.log("Fetched players from DB:", players);
+    console.log("Fetched players from DB:");
 
     // Update cache
     cachedPlayers = players;

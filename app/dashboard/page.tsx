@@ -26,6 +26,8 @@ export default function PlayerForm() {
   const [news, setNews] = useState<NewsItem[]>([]);
   const [ticket, setTicket] = useState<TicketEvent[]>([]);
   const [render, setRender] = useState(0);
+  const [y, setY] = useState<number>(2);
+  const [x, setX] = useState<number>(0);
 
   const deletePlayer = (id: number | string, label: any) => async () => {
     const links: Record<string, string> = {
@@ -93,13 +95,20 @@ export default function PlayerForm() {
       setTimeout(() => setErr(null), 3000);
     }
   };
-
+  const home = () => {
+    if (y > players.length) {
+      setY(2);
+      setX(0);
+    } else {
+      setY(y + 1), setX(x + 1);
+    }
+  };
   useEffect(() => {
     fetchPlayers();
   }, []);
 
   return (
-    <section className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
+    <section className="bg-green-50 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
       <div className="max-w-3xl mx-auto p-6 bg-white rounded-xl shadow-lg mt-10 text-black">
         <h1 className="text-2xl font-bold text-center mb-6">
           Player Data Results
@@ -112,7 +121,7 @@ export default function PlayerForm() {
         <div>
           {players.length > 0 ? (
             <ul className="space-y-4">
-              {players.map((player) => (
+              {players.slice(x, y).map((player) => (
                 <li
                   key={player.number}
                   className="p-3 bg-green-100 rounded border border-green-200"
@@ -146,7 +155,7 @@ export default function PlayerForm() {
 
                   <div className="relative mt-2">
                     <button
-                      className="absolute bottom-2 right-0 bg-red-600 text-white px-3 py-1 rounded hover:bg-red-700"
+                      className="absolute -bottom-3 -right-3 bg-red-600 text-white px-3 py-1 rounded hover:bg-red-700"
                       onClick={deletePlayer(player.id, "player")}
                     >
                       delete
@@ -154,6 +163,12 @@ export default function PlayerForm() {
                   </div>
                 </li>
               ))}
+              <button
+                className="right-0 bottom-0 bg-red-600 text-white px-3 py-1 rounded hover:bg-red-700"
+                onClick={home}
+              >
+                show more palyers
+              </button>
             </ul>
           ) : (
             <div>loading.....</div>
@@ -179,10 +194,10 @@ export default function PlayerForm() {
                   className="p-3 relative bg-blue-100 rounded border border-blue-200"
                 >
                   <div className="font-bold">{item.title}</div>
-                  <div>{item.content}</div>
+                  <div>{item.content.slice(0, 500)}.....</div>
                   <div className="text-xs text-gray-600">Date: {item.date}</div>
                   <button
-                    className="absolute bottom-2 right-0 bg-red-600 text-white px-3 py-1 rounded hover:bg-red-700"
+                    className="absolute bottom-0 right-0 bg-red-600 text-white px-3 py-1 rounded hover:bg-red-700"
                     onClick={deletePlayer(item.id, "news")}
                   >
                     delete

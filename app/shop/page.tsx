@@ -1,6 +1,7 @@
 "use client";
+import CheckoutModal from "@/components/ShowModal";
 import Image from "next/image";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { FaShoppingCart } from "react-icons/fa";
 
 type Product = {
@@ -64,9 +65,74 @@ const PRODUCTS: Product[] = [
     description: "Large club flag for fan displays",
   },
 ];
-
+type Buy = {
+  itemId: string;
+  quantity: number;
+  amountPaid: number;
+};
 export default function MerchShop() {
   const [cart, setCart] = useState<Record<string, number>>({});
+  const [PRODUCTS, setProducts] = useState<Product[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [result, setResult] = useState<{ items: any[]; totalAmount: number }>({
+    items: [],
+    totalAmount: 0,
+  });
+
+  const [showModal, setShowModal] = useState(false);
+  const buy = async () => {
+    try {
+      console.log(cart);
+      const payload = {
+        product: Object.entries(cart).map(([Id, Quantity]) => ({
+          Id,
+          Quantity,
+        })),
+      };
+      console.log(payload);
+      const res = await fetch("/api/shop", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(payload),
+      });
+      const f = await res.json();
+      // setResult(f);
+      setResult((prev) => ({
+        items: [...(prev.items || []), ...(f.items || [])],
+        totalAmount: (prev.totalAmount || 0) + (f.totalAmount || 0),
+      }));
+      setCart({});
+      // console.log("home", f.items[0].name, f.totalAmount);
+    } catch (e) {
+      console.log("errorrrrrrr", e);
+    }
+  };
+
+  const getProduct = async () => {
+    try {
+      setLoading(true);
+      const res = await fetch("/api/shop", {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+
+      if (!res.ok) {
+        console.error("Failed to fetch products:", res.status);
+        throw new Error("Network Error");
+      }
+
+      const data = await res.json();
+      setProducts(data);
+    } catch (error) {
+      console.error("Error fetching products:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   function addToCart(product: Product) {
     if (!product.inStock) return;
@@ -74,13 +140,43 @@ export default function MerchShop() {
       ...prev,
       [product.id]: (prev[product.id] || 0) + 1,
     }));
+
+    // console.log(cart[product.id]);
   }
+
+  useEffect(() => {
+    getProduct();
+  }, []);
 
   return (
     <section className="max-w-7xl mx-auto px-4 md:px-8 py-12 ">
-      <h2 className="text-3xl md:text-4xl font-bold mb-8 flex text-black flex-row-gap-3">
+      <h2 className="w-full justify-between text-3xl md:text-4xl font-bold mb-8 flex text-black flex-row-gap-3">
         Gor Mahia Shop
-      </h2>
+        {loading && <p className="text-green-100"> Loading products...</p>}
+        <div className="p-6 text-sm">
+          {Object.keys(result).length && (
+            <button
+              onClick={() => {
+                setShowModal(true);
+              }}
+              className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg"
+            >
+              View Checkout Summary
+            </button>
+          )}
+          {showModal && (
+            <CheckoutModal
+              data={result}
+              onClose={() => {
+                setShowModal(false), setCart({});
+              }}
+            />
+          )}
+        </div>
+      </h2>{" "}
+      {!loading && PRODUCTS.length === 0 && (
+        <p className="text-gray-500">No products available right now.</p>
+      )}
       <div className="flex max-sm:flex-col gap-3 justify-between">
         <div className="sm:flex-2 grid gap-8 grid-cols-1 sm:grid-cols-1 md:grid-cols-2">
           {PRODUCTS.map((p) => (
@@ -116,7 +212,7 @@ export default function MerchShop() {
                     New
                   </span>
                 )}
-                <p className="mt-2 text-black text-sm">{p.description}</p>
+                <p className="mt-2 text-black text-sm">{p.description}..</p>
 
                 <button
                   onClick={() => addToCart(p)}
@@ -139,10 +235,21 @@ export default function MerchShop() {
         {Object.keys(cart).length > 0 && (
           <div className="mt-1 p-4 sm:flex-1 bg-gray-50 rounded shadow text-black">
             <h3 className="text-black font-bold text-xl mb-4">Cart Preview</h3>
-            <button onClick={() => setCart({})}> clear the cart array</button>
+            <div className="">
+              {" "}
+              <button
+                className="p-2 rounded bg-red-500/90 font-bold text-xs ml-[65%] mb-4 text-white"
+                onClick={() => setCart({})}
+              >
+                {" "}
+                clear the cart array
+              </button>
+            </div>
+
             <ul className="space-y-2">
               {Object.entries(cart).map(([pid, qty]) => {
                 const prod = PRODUCTS.find((x) => x.id === pid)!;
+
                 return (
                   <li key={pid} className="flex justify-between">
                     <span>
@@ -163,7 +270,12 @@ export default function MerchShop() {
                   }, 0)
                   .toFixed(2)}
               </span>
-              <button className="px-5 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">
+              <button
+                onClick={() => {
+                  buy();
+                }}
+                className="px-5 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+              >
                 Checkout
               </button>
             </div>

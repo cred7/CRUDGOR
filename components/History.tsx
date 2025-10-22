@@ -3,7 +3,7 @@ import Button from "./Button";
 
 const History = () => {
   return (
-    <section className="w-full justify-center items-center flex flex-col p-4">
+    <section className="w-full justify-center items-center flex flex-col p-4 bg-green-50">
       <div className="max-w-6xl m-4 flex flex-col">
         <h1 className="text-3xl md:text-5xl font-bold text-green-700 mb-4">
           History

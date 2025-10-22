@@ -20,7 +20,7 @@ export default async function NewsSection() {
           >
             <div className="relative h-48 w-full">
               <Image
-                src={item.imageUrl}
+                src={item.imageUrl.includes("/") ? item.imageUrl : `/Logo.png`}
                 alt={item.title}
                 fill
                 className="object-cover"
@@ -32,9 +32,9 @@ export default async function NewsSection() {
               <h3 className="mt-2 text-lg font-semibold text-gray-900 dark:text-white">
                 {item.title}
               </h3>
-              {item.excerpt && (
+              {item.content && (
                 <p className="mt-2 text-gray-700 dark:text-gray-300">
-                  {item.excerpt}
+                  {item.content.slice(0, 200)}...
                 </p>
               )}
             </div>

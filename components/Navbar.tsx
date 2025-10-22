@@ -6,7 +6,7 @@ const Navbar = () => {
   const items = [
     { name: "News", href: "/news" },
     { name: "Tickets", href: "/tickets" },
-    { name: "Fixtures", href: "/matches" },
+    { name: "History", href: "/history" },
     { name: "Teams", href: "/player" },
     { name: "Shop", href: "/shop" },
   ];

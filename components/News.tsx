@@ -1,11 +1,12 @@
 import prisma from "@/lib/prisma";
 import Image from "next/image";
+import Link from "next/link";
 import Button from "./Button";
 
 const News = async () => {
   const news = await prisma.news.findMany();
-  console.log("dome");
-  console.log(news);
+  // console.log("dome");
+  // console.log(news.slice(0, 2));
   return (
     <section className="w-full overflow-hidden">
       <div className="flex w-full flex-col mb-3 md:mt-30 px-5 justify-center items-center overflow-hidden">
@@ -16,20 +17,28 @@ const News = async () => {
 
             <div className="grid fade-in grid-cols-1 lg:w-full lg:flex-nowrap md:grid-cols-2 lg:flex lg:flex-row lg:overflow-x-scroll scrollbar-hide gap-4 md:gap-x-4 md:px-0">
               {news.slice(0, 4).map((i, index) => (
-                <div key={index} className="w-full px-2">
-                  <div className="min-w-[40vw] flex-col shadow-sm md:min-w-[24%] h-[25vh] md:h-[30vh] lg:h-50 relative">
-                    <Image
-                      src={i.imageUrl}
-                      alt=""
-                      fill
-                      className="w-full object-cover"
-                    />
+                <Link
+                  key={i.id}
+                  href={`/news/${i.id}`}
+                  className="block overflow-hidden w-full rounded-lg shadow-lg hover:shadow-xl transition"
+                >
+                  <div key={index} className="w-full px-2">
+                    <div className="min-w-[40vw] flex-col shadow-sm md:min-w-[24%] h-[25vh] md:h-[30vh] lg:h-50 relative">
+                      <Image
+                        src={
+                          i.imageUrl.includes("/") ? i.imageUrl : `/Logo.png`
+                        }
+                        alt=""
+                        fill
+                        className="w-full object-cover"
+                      />
+                    </div>
+                    <h1 className="text-lg font-bold">{i.title}</h1>
+                    <h1 className="text-sm">{i.date}</h1>
+                    <div className="w-full bg-gradient-to-b from-green-700 via-orange-300/60 to-green-600/90"></div>
+                    {/* <div className="font-light">{i.excerpt}</div> */}
                   </div>
-                  <h1 className="text-lg font-bold">{i.title}</h1>
-                  {/* <h1 className="text-sm">{i.date}</h1> */}
-                  <div className="w-full bg-gradient-to-b from-green-700 via-orange-300/60 to-green-600/90"></div>
-                  <div className="font-light">{i.excerpt}</div>
-                </div>
+                </Link>
               ))}
             </div>
 

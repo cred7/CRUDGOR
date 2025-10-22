@@ -27,8 +27,16 @@ export default function Tickets() {
   const [showFaq, setShowFaq] = useState<Record<string, boolean>>({});
 
   const [error, setError] = useState<string | null>(null);
-  const [succes, setSucces] = useState<string | null>(null);
+
   const [loading, setLoading] = useState(false); // Add loading state
+  const [payement, setPayement] = useState<any>(null);
+
+  // patement deatail
+  const [name, setName] = useState("");
+  const [phone, setPhone] = useState("");
+  const [email, setEmail] = useState("");
+  // const [error, setError] = useState<string | null>(null);
+  const [succes, setSucces] = useState<string | null>(null);
 
   const handleQtyChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = Number(e.target.value);
@@ -81,13 +89,21 @@ export default function Tickets() {
   async function confirmPurchase() {
     // placeholder for actual purchase
     try {
-      if (!selectedEvent || !selectedTier) return;
-      alert(
-        `Purchased ${purchaseQty} x ${selectedTier} for ${selectedEvent.title}. (Demo)`
-      );
-      const data = { selectedEvent, selectedTier, purchaseQty };
+      const eventId = selectedEvent.id;
+      const data = { eventId, selectedTier, purchaseQty };
       console.log("Purchase data:", data);
-
+      setPayement(data);
+    } catch (error) {
+      console.error("Purchase error:", error);
+    }
+  }
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!name || !phone || !email) {
+      setError("All fields are required.");
+      return;
+    }
+    try {
       const savedTicket = await fetch("/api/ticket", {
         method: "POST",
         headers: {
@@ -97,18 +113,25 @@ export default function Tickets() {
           eventId: selectedEvent.id,
           tier: selectedTier,
           quantity: purchaseQty,
+          name,
+          phone,
+          email,
         }),
       });
       const res = await savedTicket.json();
       setSucces(res.message);
       setTimeout(() => setSucces(null), 5000);
       console.log("Purchase response:", res.message);
+      setTimeout(() => {
+        setError(null);
+        setSelectedEvent(null);
+        setPayement(null);
+      }, 5000);
     } catch (error) {
       console.error("Purchase error:", error);
     }
+  };
 
-    setSelectedEvent(null);
-  }
   async function getData() {
     try {
       setLoading(true); // 2. Set loading to true before fetch
@@ -120,7 +143,7 @@ export default function Tickets() {
       const data: TicketEvent[] = await res.json();
       // console.log("Fetched ticket data:", data);
       setEvents(data);
-      console.log("Events state updated:", Events);
+      console.log("Events state updated:");
       // setQuery("G");
     } catch (error) {
       setError("Error fetching tickets");
@@ -133,17 +156,13 @@ export default function Tickets() {
   }, [succes]);
 
   return (
-    <section className="max-w-7xl mx-auto px-4 md:px-8 py-12 items-center justify-center ">
+    <section className="max-w-7xl relative mx-auto px-4 md:px-8 py-12 items-center justify-center ">
       <header className="flex flex-col md:flex-row md:items-center text-black md:justify-between gap-4 mb-8">
         <div>
           <h1 className="text-3xl md:text-4xl font-extrabold flex items-center gap-3">
             <FaTicketAlt /> Tickets {error && error}
           </h1>
-          {succes && (
-            <div className=" text-bold rounded-full z-50 top-10 leftt-4 p-3 justify-center items-center bg-green-300 text-green-600">
-              {succes}
-            </div>
-          )}
+
           <p className="text-black mt-2">
             Browse upcoming matches, pick your seating tier and secure your
             seat.
@@ -200,7 +219,9 @@ export default function Tickets() {
               >
                 <div className="relative h-44 w-full">
                   <Image
-                    src={evt.thumbnail}
+                    src={
+                      evt.thumbnail.includes("/") ? evt.thumbnail : `/Logo.png`
+                    }
                     alt={evt.title}
                     fill
                     className="object-cover"
@@ -280,7 +301,6 @@ export default function Tickets() {
           })}
         </div>
       )}
-
       {/* FAQ */}
       <section className="mt-12 text-black">
         <h2 className="text-2xl font-bold mb-4">Frequently Asked Questions</h2>
@@ -426,6 +446,84 @@ export default function Tickets() {
               By continuing you agree to the ticketing terms and conditions.
             </div>
           </div>
+        </div>
+      )}
+      {/* if (showPayment && paymentData){" "}
+      {
+        // render the PaymentDetail component
+        // return <PayementDetail data={paymentData} />;
+      } */}
+      {/* {payement && <Payement data={payement} />} */}
+      {payement && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
+          <form
+            onSubmit={handleSubmit}
+            className="bg-white rounded-lg max-w-md w-full p-6 shadow-lg"
+          >
+            <h2 className="text-xl font-bold mb-4 text-black text-center">
+              Payment Details
+            </h2>
+            {error && (
+              <div className="mb-3 text-red-600 bg-red-100 p-2 rounded">
+                {error}
+              </div>
+            )}
+            {succes && (
+              <div className=" text-bold rounded-full z-50 top-10 leftt-4 p-3 justify-center items-center bg-green-300 text-green-600">
+                {succes}
+              </div>
+            )}
+            <div className="mb-4">
+              <label className="block text-black mb-1 font-medium">Name</label>
+              <input
+                type="text"
+                className="w-full text-black border rounded px-3 py-2"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                placeholder="Your full name"
+                required
+              />
+            </div>
+            <div className="mb-4">
+              <label className="block text-black mb-1 font-medium">
+                Phone Number
+              </label>
+              <input
+                type="tel"
+                className="w-full border text-black rounded px-3 py-2"
+                value={phone}
+                onChange={(e) => setPhone(e.target.value)}
+                placeholder="07XXXXXXXX"
+                required
+              />
+            </div>
+            <div className="mb-6">
+              <label className="block text-black mb-1 font-medium">Email</label>
+              <input
+                type="email"
+                className="w-full border  text-black rounded px-3 py-2"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="you@example.com"
+                required
+              />
+            </div>
+            <div className="flex justify-between">
+              <button
+                type="button"
+                className="px-4 py-2 rounded text-black bg-gray-200 hover:bg-gray-300"
+                onClick={() => setPayement(null)}
+              >
+                Cancel
+              </button>
+              <button
+                type="submit"
+                className="px-4 py-2 rounded bg-green-600 text-white hover:bg-green-700"
+              >
+                Continue
+              </button>
+            </div>
+          </form>
         </div>
       )}
     </section>

@@ -14,7 +14,7 @@ const Menus = () => {
   ];
   return (
     <>
-      <div className="">
+      <div className="bg-none">
         <button onClick={() => setMenu((p) => !p)}>
           {menu ? <X size={23} /> : <MenuIcon />}
         </button>

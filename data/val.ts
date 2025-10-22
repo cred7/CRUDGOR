@@ -4,7 +4,7 @@ export const purchaseSchema = Yup.object().shape({
   purchaseQty: Yup.number()
     .required("Quantity is required")
     .min(1, "Minimum is 1")
-    .max(10, "Maximum is 10"),
+    .max(1000, "Maximum is 10"),
 });
 
 export const palyerDataSchema = Yup.object().shape({
@@ -47,10 +47,8 @@ export const playerSchema = Yup.object().shape({
 export const newsSchema = Yup.object().shape({
   title: Yup.string().required("Title is required"),
   date: Yup.date().required("Date is required"),
-  excerpt: Yup.string().required("Excerpt is required"),
-  imageUrl:
-    Yup.string()
-    .required("Image URL required"),
+  // excerpt: Yup.string().required("Excerpt is required"),
+  imageUrl: Yup.string().required("Image URL required"),
   content: Yup.string().required("Content is required"),
 });
 
@@ -59,7 +57,11 @@ export const ticketSchema = Yup.object().shape({
   date: Yup.date().required("Date is required"),
   competition: Yup.string().required("Competition is required"),
   venue: Yup.string().required("Venue is required"),
-  thumbnail: Yup.string()
-  .required("Thumbnail is required"),
+  thumbnail: Yup.string().required("Thumbnail is required"),
   description: Yup.string().required("Description is required"),
 });
+
+// soldOut: "",
+// tname: "",
+// tprice: 4,
+// tavailable: 4,

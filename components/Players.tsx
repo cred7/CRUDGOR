@@ -5,6 +5,7 @@ import Button from "./Button";
 
 const Players = async () => {
   const playerData = await prisma.player.findMany();
+  // console.log(playerData);
 
   return (
     <section className="flex flex-col items-center justify-center w-full bg-green-700/90 bg-gradient-to-b from-transparent to-green-600/90 p-4">
@@ -28,13 +29,15 @@ const Players = async () => {
                       </h1>
                       <h1 className="absolutke text-black right-3 top-3">
                         {new Date().getFullYear() -
-                          new Date(i.dateOfBirth).getFullYear()}
+                          new Date(Number(i.dateOfBirth)).getFullYear()}
                       </h1>
                     </div>
 
                     <div className="w-full relative h-[80%]">
                       <Image
-                        src={i.imageUrl || `/Logo.png`}
+                        src={
+                          i.imageUrl.includes("/") ? i.imageUrl : `/Logo.png`
+                        }
                         alt=""
                         fill
                         className="w-[100%] h-[80%] object-contain rounded"

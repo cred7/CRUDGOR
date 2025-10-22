@@ -11,12 +11,7 @@ export async function POST(req: Request) {
         { status: 400 }
       );
     }
-
-    // Here you would normally save to the database, e.g.:
-    // const prisma = new PrismaClient();
     const news = await prisma.news.create({ data });
-    console.log("Created news item:", news);
-
     return NextResponse.json({
       message: "News created successfully",
       // news,

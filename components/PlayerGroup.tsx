@@ -18,7 +18,7 @@ export default function PlayerGroup({
   err,
 }: Props) {
   return (
-    <section className="max-w-6xl mx-auto px-4 md:px-8 items-center py-10">
+    <section className="max-w-6xl bg-green-50 mx-auto px-4 md:px-8 items-center py-10">
       <header className="mb-8 justify-center items-center text-green-700">
         <h2 className="text-3xl md:text-4xl font-extrabold">{title}</h2>
         <p className="text-gray-600 mt-2">{description}</p>
