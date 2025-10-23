@@ -125,7 +125,7 @@ export default function DataInputForms() {
 
       const endpoint = endpointMap[label];
       if (!endpoint) throw new Error(`No endpoint found for label: ${label}`);
-      console.log(data);
+      // console.log(data);
       const response = await fetch(endpoint, {
         method: "POST",
         headers: {
@@ -136,7 +136,7 @@ export default function DataInputForms() {
 
       if (!response.ok) {
         const errText = await response.text();
-        console.log(error, "heloloeleol");
+        // console.log(error, "heloloeleol");
         setError(`Failed to save ${label}: ${errText}`);
         setTimeout(() => setAlertMessage(null), 5000);
       }

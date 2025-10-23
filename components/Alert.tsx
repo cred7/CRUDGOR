@@ -3,7 +3,7 @@ import Link from "next/link";
 
 const Alert = () => {
   return (
-    <div className="max-w-screen w-full flex justify-center items-center mb-0 z-10">
+    <div className="max-w-screen w-full flex justify-center items-center mb-0 relative z-10">
       <div className="flex items-center justify-between uppercase h-[40px] w-full text-xs md:text-normal primary pr-6">
         <div className="flex items-center h-full  ">
           <Link
@@ -32,7 +32,8 @@ const Alert = () => {
           </Link>
         </div>
         <div className="items-center flex  justify-center max-sm:p-2 font-size-[13px] font-[400] font-Roboto font-sans-serif">
-          <ZapIcon /> Sing in
+          <ZapIcon />
+          {/* <HomePage /> */}
         </div>
       </div>
     </div>

@@ -1,4 +1,5 @@
 "use client";
+import HomePage from "@/components/Login";
 import { NewsItem, TicketEvent } from "@/data/data";
 import { useEffect, useState } from "react";
 
@@ -20,14 +21,20 @@ type Player = {
   };
 };
 
-export default function PlayerForm() {
+export default function PlayerForms() {
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [err, setErr] = useState<string | null>(null);
   const [players, setPlayers] = useState<Player[]>([]);
   const [news, setNews] = useState<NewsItem[]>([]);
   const [ticket, setTicket] = useState<TicketEvent[]>([]);
-  const [render, setRender] = useState(0);
   const [y, setY] = useState<number>(2);
   const [x, setX] = useState<number>(0);
+
+  const checkAuth = async () => {
+    const res = await fetch("/api/auth/verify", { credentials: "include" });
+    const data = await res.json();
+    setIsAuthenticated(data.authenticated);
+  };
 
   const deletePlayer = (id: number | string, label: any) => async () => {
     const links: Record<string, string> = {
@@ -105,162 +112,172 @@ export default function PlayerForm() {
   };
   useEffect(() => {
     fetchPlayers();
+    checkAuth();
   }, []);
 
   return (
-    <section className="bg-green-50 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
-      <div className="max-w-3xl mx-auto p-6 bg-white rounded-xl shadow-lg mt-10 text-black">
-        <h1 className="text-2xl font-bold text-center mb-6">
-          Player Data Results
-        </h1>
-        {err && (
-          <div className="mb-4 p-3 pb-6 bg-red-100 text-red-800 border border-red-200 rounded">
-            {err}
-          </div>
-        )}
-        <div>
-          {players.length > 0 ? (
-            <ul className="space-y-4">
-              {players.slice(x, y).map((player) => (
-                <li
-                  key={player.number}
-                  className="p-3 bg-green-100 rounded border border-green-200"
-                >
-                  <div className="font-bold">
-                    {player.name} {player.position}
-                  </div>
-                  <div>Nickname: {player.nickname}</div>
-                  <div>Nationality: {player.nationality}</div>
-                  <div>Date of Birth: {player.dateOfBirth}</div>
-                  <div>Player: {player.position}</div>
-                  <div>Player: {player.imageUrl}</div>
-                  <div>
-                    Height: {player.height} | Weight: {player.weight}
-                  </div>
-                  <div>
-                    Instagram:{" "}
-                    {player.social.instagram ? (
-                      <a
-                        href={player.social.instagram}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="text-blue-600 underline"
-                      >
-                        {player.social.instagram}
-                      </a>
-                    ) : (
-                      "N/A"
-                    )}
-                  </div>
-
-                  <div className="relative mt-2">
-                    <button
-                      className="absolute -bottom-3 -right-3 bg-red-600 text-white px-3 py-1 rounded hover:bg-red-700"
-                      onClick={deletePlayer(player.id, "player")}
+    <>
+      {!isAuthenticated ? (
+        <HomePage setIsAuthenticated={setIsAuthenticated} />
+      ) : (
+        <section className="bg-green-50 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 relative">
+          <div className="max-w-3xl mx-auto p-6 bg-white rounded-xl shadow-lg mt-10 text-black">
+            <h1 className="text-2xl font-bold text-center mb-6">
+              Player Data Results
+            </h1>
+            {err && (
+              <div className="mb-4 p-3 pb-6 bg-red-100 text-red-800 border border-red-200 rounded">
+                {err}
+              </div>
+            )}
+            <div>
+              {players.length > 0 ? (
+                <ul className="space-y-4">
+                  {players.slice(x, y).map((player) => (
+                    <li
+                      key={player.number}
+                      className="p-3 bg-green-100 rounded border border-green-200"
                     >
-                      delete
-                    </button>
-                  </div>
-                </li>
-              ))}
-              <button
-                className="right-0 bottom-0 bg-red-600 text-white px-3 py-1 rounded hover:bg-red-700"
-                onClick={home}
-              >
-                show more palyers
-              </button>
-            </ul>
-          ) : (
-            <div>loading.....</div>
-          )}
-        </div>
-      </div>
+                      <div className="font-bold">
+                        {player.name} {player.position}
+                      </div>
+                      <div>Nickname: {player.nickname}</div>
+                      <div>Nationality: {player.nationality}</div>
+                      <div>Date of Birth: {player.dateOfBirth}</div>
+                      <div>Player: {player.position}</div>
+                      <div>Player: {player.imageUrl}</div>
+                      <div>
+                        Height: {player.height} | Weight: {player.weight}
+                      </div>
+                      <div>
+                        Instagram:{" "}
+                        {player.social.instagram ? (
+                          <a
+                            href={player.social.instagram}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-blue-600 underline"
+                          >
+                            {player.social.instagram}
+                          </a>
+                        ) : (
+                          "N/A"
+                        )}
+                      </div>
 
-      <div className="max-w-3xl mx-auto p-6 bg-white rounded-xl shadow-lg mt-10 text-black">
-        <h1 className="text-2xl font-bold text-center mb-6">
-          News Data Results
-        </h1>
-        {err && (
-          <div className="mb-4 p-3 pb-6 bg-red-100 text-red-800 border border-red-200 rounded">
-            {err}
-          </div>
-        )}
-        <div>
-          {news.length > 0 ? (
-            <ul className="space-y-4">
-              {news.map((item) => (
-                <li
-                  key={item.id}
-                  className="p-3 relative bg-blue-100 rounded border border-blue-200"
-                >
-                  <div className="font-bold">{item.title}</div>
-                  <div>{item.content.slice(0, 500)}.....</div>
-                  <div className="text-xs text-gray-600">Date: {item.date}</div>
+                      <div className="relative mt-2">
+                        <button
+                          className="absolute -bottom-3 -right-3 bg-red-600 text-white px-3 py-1 rounded hover:bg-red-700"
+                          onClick={deletePlayer(player.id, "player")}
+                        >
+                          delete
+                        </button>
+                      </div>
+                    </li>
+                  ))}
                   <button
-                    className="absolute bottom-0 right-0 bg-red-600 text-white px-3 py-1 rounded hover:bg-red-700"
-                    onClick={deletePlayer(item.id, "news")}
+                    className="right-0 bottom-0 bg-red-600 text-white px-3 py-1 rounded hover:bg-red-700"
+                    onClick={home}
                   >
-                    delete
+                    show more palyers
                   </button>
-                </li>
-              ))}
-            </ul>
-          ) : (
-            <div>loading.....</div>
-          )}
-        </div>
-      </div>
-      <div className="max-w-3xl mx-auto p-6 bg-white rounded-xl shadow-lg mt-10 text-black">
-        <h1 className="text-2xl font-bold text-center mb-6">
-          Tickets & Events Data Results
-        </h1>
-        {err && (
-          <div className="mb-4 p-3 pb-6 bg-red-100 text-red-800 border border-red-200 rounded">
-            {err}
+                </ul>
+              ) : (
+                <div>loading.....</div>
+              )}
+            </div>
           </div>
-        )}
-        <div>
-          {ticket.length > 0 ? (
-            <ul className="space-y-4">
-              {ticket.map((evt) => (
-                <li
-                  key={evt.id}
-                  className="p-3 relative bg-yellow-100 rounded border border-yellow-200"
-                >
-                  <div className="font-bold">
-                    {evt.title} ({evt.competition})
-                  </div>
-                  <div>Date: {evt.date}</div>
-                  <div>Venue: {evt.venue}</div>
-                  <div>
-                    Tiers:
-                    <ul className="ml-4 list-disc">
-                      {evt.tiers.map((tier) => (
-                        <li key={tier.name}>
-                          {tier.name}: KES {tier.price} ({tier.available} left)
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                  <div>
-                    <span className="text-xs text-gray-500">
-                      Event ID: {evt.id}
-                    </span>
-                  </div>
-                  <button
-                    className="absolute bottom-2 right-0 bg-red-600 text-white px-3 py-1 rounded hover:bg-red-700"
-                    onClick={deletePlayer(evt.id, "ticket")}
-                  >
-                    delete
-                  </button>
-                </li>
-              ))}
-            </ul>
-          ) : (
-            <div>loading.....</div>
-          )}
-        </div>
-      </div>
-    </section>
+
+          <div className="max-w-3xl mx-auto p-6 bg-white rounded-xl shadow-lg mt-10 text-black">
+            <h1 className="text-2xl font-bold text-center mb-6">
+              News Data Results
+            </h1>
+            {err && (
+              <div className="mb-4 p-3 pb-6 bg-red-100 text-red-800 border border-red-200 rounded">
+                {err}
+              </div>
+            )}
+            <div>
+              {news.length > 0 ? (
+                <ul className="space-y-4">
+                  {news.map((item) => (
+                    <li
+                      key={item.id}
+                      className="p-3 relative bg-blue-100 rounded border border-blue-200"
+                    >
+                      <div className="font-bold">{item.title}</div>
+                      <div>{item.content.slice(0, 500)}.....</div>
+                      <div className="text-xs text-gray-600">
+                        Date: {item.date}
+                      </div>
+                      <button
+                        className="absolute bottom-0 right-0 bg-red-600 text-white px-3 py-1 rounded hover:bg-red-700"
+                        onClick={deletePlayer(item.id, "news")}
+                      >
+                        delete
+                      </button>
+                    </li>
+                  ))}
+                </ul>
+              ) : (
+                <div>loading.....</div>
+              )}
+            </div>
+          </div>
+          <div className="max-w-3xl mx-auto p-6 bg-white rounded-xl shadow-lg mt-10 text-black">
+            <h1 className="text-2xl font-bold text-center mb-6">
+              Tickets & Events Data Results
+            </h1>
+            {err && (
+              <div className="mb-4 p-3 pb-6 bg-red-100 text-red-800 border border-red-200 rounded">
+                {err}
+              </div>
+            )}
+            <div>
+              {ticket.length > 0 ? (
+                <ul className="space-y-4">
+                  {ticket.map((evt) => (
+                    <li
+                      key={evt.id}
+                      className="p-3 relative bg-yellow-100 rounded border border-yellow-200"
+                    >
+                      <div className="font-bold">
+                        {evt.title} ({evt.competition})
+                      </div>
+                      <div>Date: {evt.date}</div>
+                      <div>Venue: {evt.venue}</div>
+                      <div>
+                        Tiers:
+                        <ul className="ml-4 list-disc">
+                          {evt.tiers.map((tier) => (
+                            <li key={tier.name}>
+                              {tier.name}: KES {tier.price} ({tier.available}{" "}
+                              left)
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                      <div>
+                        <span className="text-xs text-gray-500">
+                          Event ID: {evt.id}
+                        </span>
+                      </div>
+                      <button
+                        className="absolute bottom-2 right-0 bg-red-600 text-white px-3 py-1 rounded hover:bg-red-700"
+                        onClick={deletePlayer(evt.id, "ticket")}
+                      >
+                        delete
+                      </button>
+                    </li>
+                  ))}
+                </ul>
+              ) : (
+                <div>loading.....</div>
+              )}
+            </div>
+          </div>
+        </section>
+      )}
+    </>
   );
 }

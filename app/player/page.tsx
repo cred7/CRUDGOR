@@ -27,7 +27,7 @@ export default function DefendersList() {
         return;
       }
       setPlayers(data);
-      console.log("Fetched players:", data);
+      // console.log("Fetched players:", data);
     } catch (error) {
       setErr("Error fetching players");
       setTimeout(() => setErr(null), 3000);

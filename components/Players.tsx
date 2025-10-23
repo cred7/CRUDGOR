@@ -27,10 +27,10 @@ const Players = async () => {
                       <h1 className="absolunte text-black left-3 top-3">
                         {i.name}
                       </h1>
-                      <h1 className="absolutke text-black right-3 top-3">
+                      {/* <h1 className="absolutke text-black right-3 top-3">
                         {new Date().getFullYear() -
                           new Date(Number(i.dateOfBirth)).getFullYear()}
-                      </h1>
+                      </h1> */}
                     </div>
 
                     <div className="w-full relative h-[80%]">
