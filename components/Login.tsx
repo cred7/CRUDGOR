@@ -8,7 +8,7 @@ export default function HomePage({ setIsAuthenticated }: HomePageProps) {
   //   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [err, setErr] = useState();
+  const [err, setErr] = useState<any>();
 
   const [trues, setTrue] = useState(false);
 

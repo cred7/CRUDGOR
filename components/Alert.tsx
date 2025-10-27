@@ -13,13 +13,13 @@ const Alert = () => {
             Gor Mahia
           </Link>
           <Link
-            href="/"
+            href="/tickets"
             className="flex1 h-full px-5 hover:text-black hover:bg-white p-3 max-sm:p-1"
           >
             Tickets
           </Link>
           <Link
-            href="/"
+            href="/shop"
             className="flex1 hover:text-black px-5 hover:bg-white h-full p-2 max-sm:p-1"
           >
             Store

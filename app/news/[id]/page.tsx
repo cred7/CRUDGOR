@@ -37,8 +37,19 @@ export default async function NewsDetail({
       </p>
       <div className="prose prose-lg max-w-none">
         {article.content.split("\n").map((p, i) => (
-          <p key={i}>{p}</p>
+          <>
+            <p key={i}>{p}</p>
+          </>
         ))}
+        <div className=" ml-10 relative h-150 w-150">
+          <Image
+            src={`/Patron1.jpg`}
+            alt={article.title}
+            fill
+            className="object-cover"
+          />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
+        </div>
       </div>
     </div>
   );

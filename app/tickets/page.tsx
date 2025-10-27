@@ -345,7 +345,11 @@ export default function Tickets() {
             <div className="flex items-center justify-between p-4 border-b">
               <div className="flex items-center gap-3">
                 <Image
-                  src={selectedEvent.thumbnail}
+                  src={
+                    selectedEvent.thumbnail.includes("/")
+                      ? selectedEvent.thumbnail
+                      : `/Logo.png`
+                  }
                   alt={selectedEvent.title}
                   width={80}
                   height={60}
