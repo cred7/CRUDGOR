@@ -60,6 +60,13 @@ export const ticketSchema = Yup.object().shape({
   thumbnail: Yup.string().required("Thumbnail is required"),
   description: Yup.string().required("Description is required"),
 });
+export const itemSchema = Yup.object().shape({
+  name: Yup.string().required("name is required"),
+  isNew: Yup.boolean().required("required"),
+  price: Yup.number().required("Price is required"),
+  inStock: Yup.number().required("Stock quantity required"),
+  description: Yup.string().required("Description is required"),
+});
 
 // soldOut: "",
 // tname: "",

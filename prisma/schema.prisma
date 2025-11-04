@@ -73,7 +73,7 @@ model Tier {
 
 model Itemshop {
   id String   @id @default(cuid())
-   nameid String
+   
     name String
     price Int
     imageUrl String

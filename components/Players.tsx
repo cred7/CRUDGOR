@@ -11,7 +11,9 @@ const Players = async () => {
     <section className="flex flex-col items-center justify-center w-full bg-green-700/90 bg-gradient-to-b from-transparent to-green-600/90 p-4">
       <div className="flex text-black flex-col mt-3 p-3 gap-2 max-w-6xl w-full">
         <div className="flex flex-col w-full items-centekr justify-center gap-2 ">
-          <h1 className="text-xl font-bold">The Team</h1>
+          <h1 className="text-3xl md:text-5xl font-bold text-black/70 ">
+            The Team
+          </h1>
           <div className="h-0.5  w-2/4 border-none rounded bg-gradient-to-b from-green-700 via-orange-300/60 to-green-600/90"></div>
 
           <div className="max-w-5xl overflow-hidden w-full m-auto">
@@ -24,7 +26,7 @@ const Players = async () => {
                   >
                     <div className="w-full flex justify-between">
                       {" "}
-                      <h1 className="absolunte text-black left-3 top-3">
+                      <h1 className="absolute text-black left-3 top-3">
                         {i.name}
                       </h1>
                       {/* <h1 className="absolutke text-black right-3 top-3">
@@ -43,7 +45,7 @@ const Players = async () => {
                         className="w-[100%] h-[80%] object-contain rounded"
                       />
                     </div>
-                    <div className="w-full flex justify-between">
+                    <div className="w-full flex justify-between p-3 px-6">
                       <div className=" text-black ">{i.position}</div>
                       <div className=" text-black">{index}</div>
                     </div>

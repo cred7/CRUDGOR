@@ -1,7 +1,7 @@
 "use client";
 
 import HomePage from "@/components/Login";
-import { newsSchema, playerSchema, ticketSchema } from "@/data/val";
+import { itemSchema, newsSchema, playerSchema, ticketSchema } from "@/data/val";
 import { useFieldValidation } from "@/lib/usePlayer";
 import { useEffect, useState } from "react";
 import * as Yup from "yup";
@@ -58,6 +58,23 @@ export default function DataInputForms() {
     vavailable: 1,
   });
   const [ticketErrors, setTicketErrors] = useState<Record<string, string>>({});
+  // Ticket state
+  const [items, setItems] = useState<{
+    name: string;
+    price: number;
+    imageUrl: string;
+    isNew: boolean;
+    inStock?: number;
+    description?: string;
+  }>({
+    name: "",
+    price: 100,
+    imageUrl: "",
+    isNew: false,
+    inStock: 100,
+    description: "",
+  });
+  const [itemErrors, setItemErrors] = useState<Record<string, string>>({});
 
   const positionOptions: Record<string, string[]> = {
     Goalkeeper: ["Goalkeeper"],
@@ -122,6 +139,13 @@ export default function DataInputForms() {
     ticket,
     setTicketErrors
   );
+  const { handleBlur: handleItemBlur } = useFieldValidation(
+    itemSchema,
+    items,
+    setItemErrors
+  );
+
+  // submit button
   const handleSubmit = async (
     label: string,
     data: any,
@@ -135,6 +159,7 @@ export default function DataInputForms() {
         Player: "/api/player",
         News: "/api/news",
         Ticket: "/api/createticket",
+        Item: "/api/createItem",
       };
 
       const endpoint = endpointMap[label];
@@ -156,7 +181,7 @@ export default function DataInputForms() {
       }
 
       const result = await response.json();
-      console.log(`✅ ${label} saved successfully:`, result);
+      // console.log(`✅ ${label} saved successfully:`, result);
       //   alert(`${label} saved successfully!`);
       setAlertMessage(result.message || `${label} saved successfully!`);
       setTimeout(() => setAlertMessage(null), 5000);
@@ -172,12 +197,13 @@ export default function DataInputForms() {
       setTimeout(() => setError(null), 5000);
     }
   };
+
+  // authenticating
   const checkAuth = async () => {
     const res = await fetch("/api/auth/verify", { credentials: "include" });
     const data = await res.json();
     setIsAuthenticated(data.authenticated);
   };
-  // ----
 
   useEffect(() => {
     if (alertMessage) {
@@ -447,6 +473,56 @@ export default function DataInputForms() {
                 </div>
               )}{" "}
               {error?.includes("ticket") && (
+                <div className="mb-4 p-3 bg-red-100 text-red-800 border border-red-200 rounded">
+                  {error}hhhhhhhhhh
+                </div>
+              )}
+            </form>
+          </div>
+
+          {/*ShopItem creation form */}
+          <div>
+            <h1 className="text-2xl font-bold text-center mb-6">Items Input</h1>
+            <form
+              onSubmit={(e) => (
+                e.preventDefault(),
+                handleSubmit("Item", items, itemSchema, setItemErrors)
+              )}
+              className="space-y-4"
+            >
+              {Object.keys(items).map((key) => (
+                <div key={key}>
+                  <label htmlFor={key} className="block font-medium capitalize">
+                    {key.replace(/([A-Z])/g, " $1")}
+                  </label>
+                  {itemErrors[key] && (
+                    <p className="text-red-600 text-sm mb-1">
+                      {itemErrors[key]}
+                    </p>
+                  )}
+                  <input
+                    type={key}
+                    id={key}
+                    name={key}
+                    value={(items as any)[key]}
+                    onChange={handleChange(setItems)}
+                    onBlur={handleItemBlur}
+                    className="w-full p-2 border rounded-md"
+                  />
+                </div>
+              ))}
+              <button
+                type="submit"
+                className="w-full bg-purple-600 hover:bg-purple-700 text-white font-semibold py-2 px-4 rounded-md mt-4"
+              >
+                Save Ticket
+              </button>
+              {alertMessage?.includes("Item") && (
+                <div className="mb-4 p-3 bg-green-100 text-green-800 border border-green-200 rounded">
+                  {alertMessage}
+                </div>
+              )}{" "}
+              {error?.includes("Item") && (
                 <div className="mb-4 p-3 bg-red-100 text-red-800 border border-red-200 rounded">
                   {error}hhhhhhhhhh
                 </div>

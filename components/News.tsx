@@ -12,7 +12,9 @@ const News = async () => {
       <div className="flex w-full flex-col mb-3 md:mt-30 px-5 justify-center items-center overflow-hidden">
         <div className="flex text-black flex-col mt-3  p-4 gap-2 max-w-7xl w-full">
           <div className="flex flex-col w-full justify-center gap-2 px-1">
-            <h1 className="text-xl font-bold">Latest News</h1>
+            <h1 className="text-3xl md:text-5xl font-bold text-green-700">
+              Latest News
+            </h1>
             <div className="h-0.5  w-2/4 border-none rounded bg-gradient-to-b from-green-700 via-orange-300/60 to-green-600/90"></div>
 
             <div className="grid fade-in grid-cols-1 lg:w-full lg:flex-nowrap md:grid-cols-2 lg:flex lg:flex-row lg:overflow-x-scroll scrollbar-hide gap-4 md:gap-x-4 md:px-0">

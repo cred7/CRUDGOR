@@ -3,21 +3,15 @@ import prisma from "@/lib/prisma";
 import Image from "next/image";
 import { notFound } from "next/navigation";
 
-export async function generateStaticParams() {
-  const NEWS = await prisma.news.findMany();
-  return NEWS.map((n) => ({
-    id: n.id.toString(),
-  }));
-}
-
 export default async function NewsDetail({
   params,
 }: {
   params: Promise<{ id: string }>;
 }) {
-  const NEWS = await prisma.news.findMany();
   const { id } = await params;
-  const article = NEWS.find((n) => n.id === Number(id));
+  const article = await prisma.news.findUnique({
+    where: { id: Number(id) },
+  });
 
   if (!article) return notFound();
 

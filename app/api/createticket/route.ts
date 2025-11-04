@@ -49,8 +49,8 @@ export async function POST(req: Request) {
         tiers: {
           create: datas.tiers.map((tier) => ({
             name: tier.name,
-            price: tier.price,
-            available: tier.available,
+            price: parseFloat(tier.price),
+            available: parseInt(tier.available, 10),
           })),
         },
       },
